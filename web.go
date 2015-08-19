@@ -29,9 +29,11 @@ func BuildHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	log.Println(params)
 	repoURL := fmt.Sprintf("https://github.com/%s/%s", params["owner"], params["repo"])
-	folder := filepath.Join("tmp/src",
+	goPath := filepath.Join("tmp/",
 		"tmp-repo-"+Md5str(repoURL)+"-"+params["ref"])
-	os.RemoveAll(folder) // need clean first
+	folder := filepath.Join(goPath,
+		"src", "github.com", params["owner"], params["repo"])
+	os.RemoveAll(goPath) // need clean first
 
 	// clone folder
 	c := exec.Command("git",
@@ -52,7 +54,7 @@ func BuildHandler(w http.ResponseWriter, r *http.Request) {
 	c = exec.Command("godep", "go", "build", "-o", target)
 	c.Env = append(c.Env,
 		"PATH="+os.Getenv("PATH"),
-		"GOPATH="+filepath.Join(CWD, "tmp"),
+		"GOPATH="+filepath.Join(CWD, goPath),
 		"GOROOT="+os.Getenv("GOROOT"),
 		"GOOS="+params["goos"],
 		"GOARCH="+params["arch"])
