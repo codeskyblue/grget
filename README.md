@@ -12,6 +12,12 @@ very simple go online build.
 curl http://grget.shengxiang.me/codeskyblue/minicdn/master/linux/amd64 -o minicdn
 ```
 
+There is also another way, use a script. This will auto check OS and ARCH. (not working in windows)
+
+```
+sh grins.sh codeskyblue/minicdn
+```
+
 ## Notification
 Please donot hack my machine.
 
