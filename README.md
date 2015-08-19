@@ -1,4 +1,6 @@
 # grget
+[![Build Status](https://travis-ci.org/codeskyblue/grget.svg)](https://travis-ci.org/codeskyblue/grget)
+
 very simple go online build.
 
 ## Limits
