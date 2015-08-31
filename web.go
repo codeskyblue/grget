@@ -15,6 +15,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/sebest/xff"
 )
 
 var (
@@ -92,7 +93,7 @@ func main() {
 	flag.Parse()
 
 	m := mux.NewRouter()
-	m.Handle("/{owner}/{repo}/{ref}/{goos}/{arch}", Gzip(http.HandlerFunc(BuildHandler)))
+	m.Handle("/{owner}/{repo}/{ref}/{goos}/{arch}", xff.Handler(Gzip(http.HandlerFunc(BuildHandler))))
 	m.HandleFunc("/", Homepage)
 	m.HandleFunc("/grins.sh", ScriptHandler)
 	m.HandleFunc("/lucky/{name}", LuckyHandler)

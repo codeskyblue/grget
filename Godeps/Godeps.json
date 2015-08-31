@@ -9,6 +9,10 @@
 		{
 			"ImportPath": "github.com/gorilla/mux",
 			"Rev": "f8220e087da2fc83d083bfc0289ed7f9db3536bd"
+		},
+		{
+			"ImportPath": "github.com/sebest/xff",
+			"Rev": "d90d345f39f4e84675192d6662c42f33a46ec830"
 		}
 	]
 }
