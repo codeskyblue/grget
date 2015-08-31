@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"flag"
 	"fmt"
+	"html/template"
 	"io"
 	"log"
 	"net/http"
@@ -68,12 +69,34 @@ func BuildHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.ServeFile(w, r, target)
+	exec.Command("scripts/add-repo.sh", params["owner"]+"/"+params["repo"]).Run()
+}
+
+func Homepage(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("index.html"))
+	tmpl.Execute(w, nil)
+}
+
+func ScriptHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("grins.sh"))
+	tmpl.Execute(w, r.Host)
+}
+
+func LuckyHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	out, _ := exec.Command("scripts/get-repo.sh", vars["name"]).Output()
+	io.WriteString(w, string(out))
 }
 
 func main() {
 	flag.Parse()
+
 	m := mux.NewRouter()
-	m.HandleFunc("/{owner}/{repo}/{ref}/{goos}/{arch}", BuildHandler)
+	m.Handle("/{owner}/{repo}/{ref}/{goos}/{arch}", Gzip(http.HandlerFunc(BuildHandler)))
+	m.HandleFunc("/", Homepage)
+	m.HandleFunc("/grins.sh", ScriptHandler)
+	m.HandleFunc("/lucky/{name}", LuckyHandler)
+
 	log.Printf("Listening on *:%d", *srvPort)
 	http.ListenAndServe(":"+strconv.Itoa(*srvPort), m)
 }
