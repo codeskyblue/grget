@@ -94,8 +94,8 @@ func main() {
 
 	m := mux.NewRouter()
 	m.HandleFunc("/", Homepage)
-	m.HandleFunc("/grins.sh", xff.Handler(http.HandlerFunc(ScriptHandler)))
 	m.HandleFunc("/lucky/{name}", LuckyHandler)
+	m.Handle("/grins.sh", xff.Handler(http.HandlerFunc(ScriptHandler)))
 	m.Handle("/{owner}/{repo}/{ref}/{goos}/{arch}", xff.Handler(Gzip(http.HandlerFunc(BuildHandler))))
 
 	log.Printf("Listening on *:%d", *srvPort)
