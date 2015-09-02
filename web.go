@@ -19,9 +19,15 @@ import (
 )
 
 var (
-	srvPort = flag.Int("p", 4000, "Listen port")
+	srvPort int
+	gitHost string
 	CWD, _  = os.Getwd()
 )
+
+func init() {
+	flag.StringVar(&gitHost, "githost", "github.com", "git host prefix")
+	flag.IntVar(&srvPort, "p", 4000, "Listen port")
+}
 
 func Md5str(s string) string {
 	return fmt.Sprintf("%x", md5.Sum([]byte(s)))
@@ -30,11 +36,15 @@ func Md5str(s string) string {
 func BuildHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	log.Println(params)
-	repoURL := fmt.Sprintf("https://github.com/%s/%s", params["owner"], params["repo"])
+	scheme := "http"
+	if gitHost == "github.com" {
+		scheme = "https"
+	}
+	repoURL := fmt.Sprintf(scheme+"://"+gitHost+"/%s/%s.git", params["owner"], params["repo"])
 	goPath := filepath.Join("tmp/",
 		"tmp-repo-"+Md5str(repoURL)+"-"+params["ref"])
 	folder := filepath.Join(goPath,
-		"src", "github.com", params["owner"], params["repo"])
+		"src", gitHost, params["owner"], params["repo"])
 	os.RemoveAll(goPath) // need clean first
 
 	// clone folder
@@ -66,7 +76,7 @@ func BuildHandler(w http.ResponseWriter, r *http.Request) {
 	c.Stdout = io.MultiWriter(output, os.Stdout)
 	c.Stderr = io.MultiWriter(output, os.Stderr)
 	if err := c.Run(); err != nil {
-		http.Error(w, output.String(), 502)
+		http.Error(w, err.Error()+"\n"+output.String(), 502)
 		return
 	}
 	http.ServeFile(w, r, target)
@@ -98,6 +108,6 @@ func main() {
 	m.Handle("/grins.sh", xff.Handler(http.HandlerFunc(ScriptHandler)))
 	m.Handle("/{owner}/{repo}/{ref}/{goos}/{arch}", xff.Handler(Gzip(http.HandlerFunc(BuildHandler))))
 
-	log.Printf("Listening on *:%d", *srvPort)
-	http.ListenAndServe(":"+strconv.Itoa(*srvPort), m)
+	log.Printf("Listening on *:%d", srvPort)
+	http.ListenAndServe(":"+strconv.Itoa(srvPort), m)
 }

@@ -20,6 +20,14 @@ There is also another way, use a script. This will auto check OS and ARCH. (not 
 sh grins.sh codeskyblue/minicdn
 ```
 
+## grcli
+
+Like `apt-get install`, So I create a tools named `grcli`
+
+	$ go get -v github.com/codeskyblue/grget/grcli
+	$ grcli install codeskyblue/fswatch
+	# now you can run fswatch
+
 ## Notification
 Please donot hack my machine.
 

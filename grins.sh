@@ -22,7 +22,7 @@ case "$(uname -m)" in
 		ARCH=amd64
 		;;
 	i686)
-		ARCH=i386
+		ARCH=386
 		;;
 	*)
 		echo "Usage: Architecture not found by uname -m"
