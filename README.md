@@ -28,6 +28,16 @@ Like `apt-get install`, So I create a tools named `grcli`
 	$ grcli install codeskyblue/fswatch
 	# now you can run fswatch
 
+## Deploy server
+
+Need to specify git host and listen port, ex
+
+	grget -githost git.localhost.com -p 4321
+
+Then add the following to bashrc, so grcli can find the right server.
+
+	export GRGET_SERVER_ADDR="git.localhost.com"
+
 ## Notification
 Please donot hack my machine.
 
